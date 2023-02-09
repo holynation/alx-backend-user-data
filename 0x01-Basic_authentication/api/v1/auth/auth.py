@@ -15,7 +15,7 @@ class Auth:
         if path in excluded_paths or path + "/" in excluded_paths:
             return False
 
-        pathWildCard = "stat*"
+        pathWildCard = "stat"
         for e_path in excluded_paths:
             if e_path.endswith('*'):
                 if path.startswith(pathWildCard):
