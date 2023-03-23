@@ -37,23 +37,30 @@ class SessionDBAuth(SessionExpAuth):
         Return:
             user id or None if session_id is None or not a string
         """
-        user_id = UserSession.search({"session_id": session_id})
-        if user_id:
-            return user_id
-        return None
+        try:
+            sessions = UserSession.search({'session_id': session_id})
+        except Exception:
+            return None
+        if len(sessions) <= 0:
+            return None
+        cur_time = datetime.now()
+        time_span = timedelta(seconds=self.session_duration)
+        exp_time = sessions[0].created_at + time_span
+        if exp_time < cur_time:
+            return None
+        return sessions[0].user_id
 
     def destroy_session(self, request=None):
         """
         Destroy a UserSession instance based on a
         Session ID from a request cookie
         """
-        if request is None:
-            return False
         session_id = self.session_cookie(request)
-        if not session_id:
+        try:
+            sessions = UserSession.search({'session_id': session_id})
+        except Exception:
             return False
-        user_session = UserSession.search({"session_id": session_id})
-        if user_session:
-            user_session[0].remove()
-            return True
-        return False
+        if len(sessions) <= 0:
+            return False
+        sessions[0].remove()
+        return True
