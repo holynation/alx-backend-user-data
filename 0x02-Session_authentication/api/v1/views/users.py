@@ -1,5 +1,3 @@
-ines (119 sloc)  3.54 KB
-
 #!/usr/bin/env python3
 """ Module of Users views
 """
